@@ -4,15 +4,7 @@
 // Package ipsec is the main package of the application
 package ipsec
 
-import (
-	"encoding/base64"
-	"errors"
-	"log"
-	"strings"
-
-	pb "github.com/opiproject/opi-api/security/v1/gen/go"
-)
-
+/*
 func parseChildListSas(childsa listChildSaParams, name string) (*pb.ListChildSa, error) {
 	log.Printf("Found key %v", childsa)
 	if name == "" {
@@ -462,3 +454,4 @@ func parseCertificate(cert *listCertParams) (*pb.ListCert, error) {
 	}
 	return ret, nil
 }
+*/

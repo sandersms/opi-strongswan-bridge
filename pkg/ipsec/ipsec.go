@@ -8,14 +8,159 @@ import (
 	"context"
 	"log"
 
-	pb "github.com/opiproject/opi-api/security/v1/gen/go"
+	pb "github.com/opiproject/opi-api/security/v1alpha1/gen/go"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Server represents the Server object
 type Server struct {
-	pb.UnimplementedIPsecServiceServer
+	pb.UnimplementedIkePeerServiceServer
+	pb.UnimplementedIkeConnectionServiceServer
+	pb.UnimplementedIpsecSaServiceServer
+	pb.UnimplementedIpsecPolicyServiceServer
 }
 
+// TODO: Refactor IpSec implementation with new CRUD model Protobufs
+
+// Ike Peer Service
+// Create Ike Peer
+func (s *Server) CreateIkePeer(_ context.Context, in *pb.CreateIkePeerRequest) (*pb.IkePeer, error) {
+	log.Printf("CreateIkePeer: received from %v", in)
+	return &pb.IkePeer{}, nil
+}
+
+// Delete Ike Peer
+func (s *Server) DeleteIkePeer(_ context.Context, in *pb.DeleteIkePeerRequest) (*emptypb.Empty, error) {
+	log.Printf("DeleteIkePeer: received from %v", in)
+	return &emptypb.Empty{}, nil
+}
+
+// Update Ike Peer
+func (s *Server) UpdateIkePeer(_ context.Context, in *pb.UpdateIkePeerRequest) (*pb.IkePeer, error) {
+	log.Printf("UpdateIkePeer: received from %v", in)
+	return &pb.IkePeer{}, nil
+}
+
+// Get Ike Peer
+func (s *Server) GetIkePeer(_ context.Context, in *pb.GetIkePeerRequest) (*pb.IkePeer, error) {
+	log.Printf("GetIkePeer: received from %v", in)
+	return &pb.IkePeer{}, nil
+}
+
+// List Ike Peer
+func (s *Server) ListIkePeers(_ context.Context, in *pb.ListIkePeersRequest) (*pb.ListIkePeersResponse, error) {
+	log.Printf("ListIkePeers: received from %v", in)
+	return &pb.ListIkePeersResponse{}, nil
+}
+
+// Ike Connection Service
+// Create Ike Connection
+func (s *Server) CreateIkeConnection(_ context.Context, in *pb.CreateIkeConnectionRequest) (*pb.IkeConnection, error) {
+	log.Printf("CreateIkeConnection: received from %v", in)
+	return &pb.IkeConnection{}, nil
+}
+
+// Delete Ike Connection
+func (s *Server) DeleteIkeConnection(_ context.Context, in *pb.DeleteIkeConnectionRequest) (*emptypb.Empty, error) {
+	log.Printf("DeleteIkeConnection: received from %v", in)
+	return &emptypb.Empty{}, nil
+}
+
+// Update Ike Connection
+func (s *Server) UpdateIkeConnection(_ context.Context, in *pb.UpdateIkeConnectionRequest) (*pb.IkeConnection, error) {
+	log.Printf("UpdateIkeConnection: received from %v", in)
+	return &pb.IkeConnection{}, nil
+}
+
+// Get Ike Connection
+func (s *Server) GetIkeConnection(_ context.Context, in *pb.GetIkeConnectionRequest) (*pb.IkeConnection, error) {
+	log.Printf("GetIkeConnection: received from %v", in)
+	return &pb.IkeConnection{}, nil
+}
+
+// List Ike Connections
+func (s *Server) ListIkeConnections(_ context.Context, in *pb.ListIkeConnectionsRequest) (*pb.ListIkeConnectionsResponse, error) {
+	log.Printf("ListIkeConnections: received from %v", in)
+	return &pb.ListIkeConnectionsResponse{}, nil
+}
+
+// Get Ike Connection Statistics
+func (s *Server) StatsIkeConnections(_ context.Context, in *pb.StatsIkeConnectionsRequest) (*pb.StatsIkeConnectionsResponse, error) {
+	log.Printf("StatsIkeConnections: received from %v", in)
+
+	stats, err := ipsecStats()
+	if err != nil {
+		log.Printf("IPsecStats: Failed %v", err)
+		return nil, err
+	}
+
+	return stats, nil
+
+}
+
+// Ipsec Sa Service
+// Create Ipsec Security Association
+func (s *Server) CreateIpsecSa(_ context.Context, in *pb.CreateIpsecSaRequest) (*pb.IpsecSa, error) {
+	log.Printf("CreateIpsecSa: received from %v", in)
+	return &pb.IpsecSa{}, nil
+}
+
+// Delete Ipsec Security Association
+func (s *Server) DeleteIpsecSa(_ context.Context, in *pb.DeleteIpsecSaRequest) (*emptypb.Empty, error) {
+	log.Printf("DeleteIpsecSa: received from %v", in)
+	return &emptypb.Empty{}, nil
+}
+
+// Update Ipsec Security Association
+func (s *Server) UpdateIpsecSa(_ context.Context, in *pb.UpdateIpsecSaRequest) (*pb.IpsecSa, error) {
+	log.Printf("UpdateIpsecSa: received from %v", in)
+	return &pb.IpsecSa{}, nil
+}
+
+// Get Ipsec Security Association
+func (s *Server) GetIpsecSa(_ context.Context, in *pb.GetIpsecSaRequest) (*pb.IpsecSa, error) {
+	log.Printf("GetIpsecSa: received from %v", in)
+	return &pb.IpsecSa{}, nil
+}
+
+// List Ipsec Security Associations
+func (s *Server) ListIpsecSas(_ context.Context, in *pb.ListIpsecSasRequest) (*pb.ListIpsecSasResponse, error) {
+	log.Printf("ListIpsecSas: received from %v", in)
+	return &pb.ListIpsecSasResponse{}, nil
+}
+
+// Ipsec Policy Service
+// Create IPsec Policy
+func (s *Server) CreateIpsecPolicy(_ context.Context, in *pb.CreateIpsecPolicyRequest) (*pb.IpsecPolicy, error) {
+	log.Printf("CreateIpsecPolicy: received from %v", in)
+	return &pb.IpsecPolicy{}, nil
+}
+
+// Delete IPsec Policy
+func (s *Server) DeleteIpsecPolicy(_ context.Context, in *pb.DeleteIpsecPolicyRequest) (*emptypb.Empty, error) {
+	log.Printf("DeleteIpsecPolicy: received from %v", in)
+	return &emptypb.Empty{}, nil
+}
+
+// Update IPsec Policy
+func (s *Server) UpdateIpsecPolicy(_ context.Context, in *pb.UpdateIpsecPolicyRequest) (*pb.IpsecPolicy, error) {
+	log.Printf("UpdateIpsecPolicy: received from %v", in)
+	return &pb.IpsecPolicy{}, nil
+}
+
+// Get IPsec Policy
+func (s *Server) GetIpsecPolicy(_ context.Context, in *pb.GetIpsecPolicyRequest) (*pb.IpsecPolicy, error) {
+	log.Printf("GetIpsecPolicy: received from %v", in)
+	return &pb.IpsecPolicy{}, nil
+}
+
+// List IPsec Policies
+func (s *Server) ListIpsecPolicies(_ context.Context, in *pb.ListIpsecPoliciesRequest) (*pb.ListIpsecPoliciesResponse, error) {
+	log.Printf("ListIIpsecPolicies: received from %v", in)
+	return &pb.ListIpsecPoliciesResponse{}, nil
+}
+
+/*
 // IPsecVersion executes the ipsecVersion
 func (s *Server) IPsecVersion(_ context.Context, _ *pb.IPsecVersionRequest) (*pb.IPsecVersionResponse, error) {
 	ver, err := ipsecVersion()
@@ -161,3 +306,5 @@ func (s *Server) IPsecUnloadConn(_ context.Context, in *pb.IPsecUnloadConnReques
 
 	return &ret, nil
 }
+
+*/

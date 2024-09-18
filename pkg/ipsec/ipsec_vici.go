@@ -5,12 +5,11 @@
 package ipsec
 
 import (
-	"errors"
 	"log"
+	//	"strings"
 	"strconv"
-	"strings"
 
-	pb "github.com/opiproject/opi-api/security/v1/gen/go"
+	pb "github.com/opiproject/opi-api/security/v1alpha1/gen/go"
 	"github.com/strongswan/govici/vici"
 )
 
@@ -244,6 +243,7 @@ type listCertParams struct {
 	NotAfter   string `vici:"not-after"`
 }
 
+/*
 func buildProposal(prop *pb.Proposals) (string, error) {
 	var crypto strings.Builder
 	var integ strings.Builder
@@ -311,9 +311,9 @@ func buildProposal(prop *pb.Proposals) (string, error) {
 	}
 
 	return result.String(), nil
-}
+} */
 
-func ipsecVersion() (*pb.IPsecVersionResponse, error) {
+/* func ipsecVersion() (*pb.IPsecVersionResponse, error) {
 	s, err := vici.NewSession()
 	if err != nil {
 		log.Printf("Failed creating vici session")
@@ -348,10 +348,10 @@ func ipsecVersion() (*pb.IPsecVersionResponse, error) {
 	}
 
 	return verresp, err
-}
+} */
 
 //nolint:funlen
-func ipsecStats() (*pb.IPsecStatsResponse, error) {
+func ipsecStats() (*pb.StatsIkeConnectionsResponse, error) {
 	s, err := vici.NewSession()
 	if err != nil {
 		log.Printf("Failed creating vici session")
@@ -370,117 +370,122 @@ func ipsecStats() (*pb.IPsecStatsResponse, error) {
 		return nil, err
 	}
 
-	var result strings.Builder
-
-	value := m.Get("uptime")
-	field, ok := value.(*vici.Message)
-	if !ok {
-		log.Printf("Embedded map key was not marshaled as a sub-message")
-	} else {
-		running := field.Get("running").(string)
-		since := field.Get("since").(string)
-		result.WriteString("Running time: " + running + "\n")
-		result.WriteString("Absolute startup time: " + since + "\n")
-	}
-
-	value = m.Get("workers")
-	field, ok = value.(*vici.Message)
-	if !ok {
-		log.Printf("Cannot find workers in map")
-	} else {
-		total := field.Get("total").(string)
-		idle := field.Get("idle").(string)
-		result.WriteString("Total # of worker threads: " + total + "\n")
-		result.WriteString("Worker threads currently idle: " + idle + "\n")
-
-		value = field.Get("active")
-		subfield, subok := value.(*vici.Message)
-		if !subok {
-			log.Printf("Cannot find active in map")
+	//	var result strings.Builder
+	/*
+		value := m.Get("uptime")
+		field, ok := value.(*vici.Message)
+		if !ok {
+			log.Printf("Embedded map key was not marshaled as a sub-message")
 		} else {
-			critical := subfield.Get("critical").(string)
-			high := subfield.Get("high").(string)
-			medium := subfield.Get("medium").(string)
-			low := subfield.Get("low").(string)
-			result.WriteString("Threads processing critical priority jobs: " + critical + "\n")
-			result.WriteString("Threads processing high priority jobs: " + high + "\n")
-			result.WriteString("Threads processing medium priority jobs: " + medium + "\n")
-			result.WriteString("Threads processing low priority jobs: " + low + "\n")
+			running := field.Get("running").(string)
+			since := field.Get("since").(string)
+			result.WriteString("Running time: " + running + "\n")
+			result.WriteString("Absolute startup time: " + since + "\n")
 		}
-	}
 
-	value = m.Get("queues")
-	field, ok = value.(*vici.Message)
-	if !ok {
-		log.Printf("Cannot find queues in map")
-	} else {
-		critical := field.Get("critical").(string)
-		high := field.Get("high").(string)
-		medium := field.Get("medium").(string)
-		low := field.Get("low").(string)
-		result.WriteString("Jobs queued with critical priority: " + critical + "\n")
-		result.WriteString("Jobs queued with high priority: " + high + "\n")
-		result.WriteString("Jobs queued with medium priority: " + medium + "\n")
-		result.WriteString("Jobs queued with low priority: " + low + "\n")
-	}
+		value = m.Get("workers")
+		field, ok = value.(*vici.Message)
+		if !ok {
+			log.Printf("Cannot find workers in map")
+		} else {
+			total := field.Get("total").(string)
+			idle := field.Get("idle").(string)
+			result.WriteString("Total # of worker threads: " + total + "\n")
+			result.WriteString("Worker threads currently idle: " + idle + "\n")
 
-	scheduled := m.Get("scheduled").(string)
-	result.WriteString("# of jobs scheduled for timed execution: " + scheduled + "\n")
+			value = field.Get("active")
+			subfield, subok := value.(*vici.Message)
+			if !subok {
+				log.Printf("Cannot find active in map")
+			} else {
+				critical := subfield.Get("critical").(string)
+				high := subfield.Get("high").(string)
+				medium := subfield.Get("medium").(string)
+				low := subfield.Get("low").(string)
+				result.WriteString("Threads processing critical priority jobs: " + critical + "\n")
+				result.WriteString("Threads processing high priority jobs: " + high + "\n")
+				result.WriteString("Threads processing medium priority jobs: " + medium + "\n")
+				result.WriteString("Threads processing low priority jobs: " + low + "\n")
+			}
+		}
 
-	value = m.Get("ikesas")
-	field, ok = value.(*vici.Message)
+		value = m.Get("queues")
+		field, ok = value.(*vici.Message)
+		if !ok {
+			log.Printf("Cannot find queues in map")
+		} else {
+			critical := field.Get("critical").(string)
+			high := field.Get("high").(string)
+			medium := field.Get("medium").(string)
+			low := field.Get("low").(string)
+			result.WriteString("Jobs queued with critical priority: " + critical + "\n")
+			result.WriteString("Jobs queued with high priority: " + high + "\n")
+			result.WriteString("Jobs queued with medium priority: " + medium + "\n")
+			result.WriteString("Jobs queued with low priority: " + low + "\n")
+		}
+
+		scheduled := m.Get("scheduled").(string)
+		result.WriteString("# of jobs scheduled for timed execution: " + scheduled + "\n")
+	*/
+	total := 0
+	halfOpen := 0
+	value := m.Get("ikesas")
+	field, ok := value.(*vici.Message)
 	if !ok {
 		log.Printf("Cannot find ikesas")
 	} else {
-		total := field.Get("total").(string)
-		halfOpen := field.Get("half-open").(string)
-		result.WriteString("Total number of IKE_SAs active: " + total + "\n")
-		result.WriteString("Number of IKE_SAs in half-open state: " + halfOpen + "\n")
+		total, err = strconv.Atoi(field.Get("total").(string))
+		halfOpen, err = strconv.Atoi(field.Get("half-open").(string))
+		//	result.WriteString("Total number of IKE_SAs active: " + total + "\n")
+		//	result.WriteString("Number of IKE_SAs in half-open state: " + halfOpen + "\n")
+	}
+	/*
+		result.WriteString("Plugins: ")
+		plugins := m.Get("plugins").([]string)
+		for c := 0; c < len(plugins); c++ {
+			result.WriteString(plugins[c] + " ")
+		}
+		result.WriteString("\n")
+
+		value = m.Get("mem")
+		field, ok = value.(*vici.Message)
+		if !ok {
+			log.Printf("Cannot find mem")
+		} else {
+			total := field.Get("total").(string)
+			allocs := field.Get("allocs").(string)
+			result.WriteString("Total heap memory usage in bytes: " + total + "\n")
+			result.WriteString("Total heap allocation in blocks: " + allocs + "\n")
+
+			// NOTE: Skipping heap-name (Windows only) for now since OPI
+			//       does not run on Windows.
+		}
+
+		value = m.Get("mallinfo")
+		field, ok = value.(*vici.Message)
+		if !ok {
+			log.Printf("Cannot find mallinfo")
+		} else {
+			sbrk := field.Get("sbrk").(string)
+			mmap := field.Get("mmap").(string)
+			used := field.Get("used").(string)
+			free := field.Get("free").(string)
+			result.WriteString("Non-mmap'd space available: " + sbrk + "\n")
+			result.WriteString("Mmap'd space available: " + mmap + "\n")
+			result.WriteString("Total number of bytes used: " + used + "\n")
+			result.WriteString("Available but unsued bytes: " + free + "\n")
+		}
+	*/
+	statsresp := pb.StatsIkeConnectionsResponse{}
+	statsresp.NumberIkeSas = &pb.NumberIkeSAs{
+		Total:    int64(total),
+		HalfOpen: int64(halfOpen),
 	}
 
-	result.WriteString("Plugins: ")
-	plugins := m.Get("plugins").([]string)
-	for c := 0; c < len(plugins); c++ {
-		result.WriteString(plugins[c] + " ")
-	}
-	result.WriteString("\n")
-
-	value = m.Get("mem")
-	field, ok = value.(*vici.Message)
-	if !ok {
-		log.Printf("Cannot find mem")
-	} else {
-		total := field.Get("total").(string)
-		allocs := field.Get("allocs").(string)
-		result.WriteString("Total heap memory usage in bytes: " + total + "\n")
-		result.WriteString("Total heap allocation in blocks: " + allocs + "\n")
-
-		// NOTE: Skipping heap-name (Windows only) for now since OPI
-		//       does not run on Windows.
-	}
-
-	value = m.Get("mallinfo")
-	field, ok = value.(*vici.Message)
-	if !ok {
-		log.Printf("Cannot find mallinfo")
-	} else {
-		sbrk := field.Get("sbrk").(string)
-		mmap := field.Get("mmap").(string)
-		used := field.Get("used").(string)
-		free := field.Get("free").(string)
-		result.WriteString("Non-mmap'd space available: " + sbrk + "\n")
-		result.WriteString("Mmap'd space available: " + mmap + "\n")
-		result.WriteString("Total number of bytes used: " + used + "\n")
-		result.WriteString("Available but unsued bytes: " + free + "\n")
-	}
-
-	statsresp := &pb.IPsecStatsResponse{
-		Status: result.String(),
-	}
-
-	return statsresp, nil
+	return &statsresp, nil
 }
 
+/*
 //nolint:funlen,gocognit,gocyclo
 func loadConn(connreq *pb.IPsecLoadConnRequest) error {
 	// Declare the connection variable, as we have to conditionally load it
@@ -861,7 +866,12 @@ func rekeyConn(rekeyreq *pb.IPsecRekeyRequest) (string, uint32, error) {
 
 	return success, uint32(matches), nil
 }
+*/
 
+func createSas(sacr *pb.CreateIpsecSaRequest) (*pb.IpSecSa) {
+	params := &SasParams{}
+}
+/*
 func listSas(listreq *pb.IPsecListSasRequest) (*pb.IPsecListSasResponse, error) {
 	params := &listSasParams{}
 
@@ -1054,3 +1064,4 @@ func listCerts(listreq *pb.IPsecListCertsRequest) (*pb.IPsecListCertsResponse, e
 
 	return &certsReply, nil
 }
+*/

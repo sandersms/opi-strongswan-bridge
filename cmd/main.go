@@ -12,24 +12,26 @@ import (
 
 	server "github.com/opiproject/opi-strongswan-bridge/pkg/ipsec"
 
-	pb "github.com/opiproject/opi-api/security/v1/gen/go"
+	pb "github.com/opiproject/opi-api/security/v1alpha1/gen/go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-var (
-	port = flag.Int("port", 50151, "The server port")
-)
-
 func main() {
+	var port int
+	flag.IntVar(&port, "server_port", 50051, "The server port")
+
 	flag.Parse()
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
 
-	pb.RegisterIPsecServiceServer(s, &server.Server{})
+	pb.RegisterIkePeerServiceServer(s, &server.Server{})
+	pb.RegisterIkeConnectionServiceServer(s, &server.Server{})
+	pb.RegisterIpsecSaServiceServer(s, &server.Server{})
+	pb.RegisterIpsecPolicyServiceServer(s, &server.Server{})
 
 	reflection.Register(s)
 
