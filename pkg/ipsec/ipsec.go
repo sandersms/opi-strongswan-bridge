@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2022-2023 Intel Corporation, or its subsidiaries.
+// Copyright (c) 2024 Dell Inc, or its subsidiaries.
 
 // Package ipsec is the main package of the application
 package ipsec
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	pb "github.com/opiproject/opi-api/security/v1alpha1/gen/go"
@@ -18,9 +20,18 @@ type Server struct {
 	pb.UnimplementedIkeConnectionServiceServer
 	pb.UnimplementedIpsecSaServiceServer
 	pb.UnimplementedIpsecPolicyServiceServer
+	IPSecSAs map[string]*pb.IpsecSa
 }
 
 // TODO: Refactor IpSec implementation with new CRUD model Protobufs
+
+// NewServer creates the initialized instance of the Dpu Device server
+func NewServer() *Server {
+	fmt.Println("Creating IpSec Server")
+	return &Server{
+		IPSecSAs:       make(map[string]*pb.IpsecSa),
+	}
+}
 
 // Ike Peer Service
 // Create Ike Peer
@@ -102,6 +113,13 @@ func (s *Server) StatsIkeConnections(_ context.Context, in *pb.StatsIkeConnectio
 // Create Ipsec Security Association
 func (s *Server) CreateIpsecSa(_ context.Context, in *pb.CreateIpsecSaRequest) (*pb.IpsecSa, error) {
 	log.Printf("CreateIpsecSa: received from %v", in)
+
+	// check input correctness
+	if err := s.validateCreateIpsecSaRequest(in); err != nil {
+		log.Printf("CreateIpsecSa(): validation failure: %v", err)
+		return nil, err
+	}
+
 	return &pb.IpsecSa{}, nil
 }
 

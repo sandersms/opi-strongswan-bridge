@@ -39,6 +39,18 @@ in tandem with the [OPI sessionOffload APIs](https://github.com/opiproject/sessi
 to provide a full IPsec experience, from IKE session creation to ESP session
 offload.
 
+## CRUD Model API
+
+The Create, Update, Delete API model is introduced in the v1alpha1 version of the security API.
+The architecture of the relationship model for the new API is shown below:
+
+```mermaid
+graph TD
+   A((IKE Connection)) --> B((IKE Peer))
+   A --> C((IPSec Policy))
+   C --> D((IPSec SA))
+```
+
 ## PoC Diagram
 
 ![OPI Security PoC Components](opi-security-poc.drawio.png)

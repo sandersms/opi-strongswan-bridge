@@ -868,8 +868,17 @@ func rekeyConn(rekeyreq *pb.IPsecRekeyRequest) (string, uint32, error) {
 }
 */
 
-func createSas(sacr *pb.CreateIpsecSaRequest) (*pb.IpSecSa) {
-	params := &SasParams{}
+func createSas(sacr *pb.CreateIpsecSaRequest) (*pb.IpsecSa, error) {
+	params := &pb.IpsecSa{}
+
+	params = sacr.GetIpsecSa()
+	if params == nil {
+		return nil, nil
+	}
+
+	var sasCreate *pb.IpsecSa
+
+	return sasCreate, nil
 }
 /*
 func listSas(listreq *pb.IPsecListSasRequest) (*pb.IPsecListSasResponse, error) {

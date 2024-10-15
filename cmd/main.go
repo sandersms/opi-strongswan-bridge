@@ -10,9 +10,8 @@ import (
 	"log"
 	"net"
 
-	server "github.com/opiproject/opi-strongswan-bridge/pkg/ipsec"
-
 	pb "github.com/opiproject/opi-api/security/v1alpha1/gen/go"
+	"github.com/opiproject/opi-strongswan-bridge/pkg/ipsec"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -27,11 +26,12 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
+	ipsecServ := ipsec.NewServer()
 
-	pb.RegisterIkePeerServiceServer(s, &server.Server{})
-	pb.RegisterIkeConnectionServiceServer(s, &server.Server{})
-	pb.RegisterIpsecSaServiceServer(s, &server.Server{})
-	pb.RegisterIpsecPolicyServiceServer(s, &server.Server{})
+	pb.RegisterIkePeerServiceServer(s, ipsecServ)
+	pb.RegisterIkeConnectionServiceServer(s, ipsecServ)
+	pb.RegisterIpsecSaServiceServer(s, ipsecServ)
+	pb.RegisterIpsecPolicyServiceServer(s, ipsecServ)
 
 	reflection.Register(s)
 
