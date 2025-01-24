@@ -11,6 +11,7 @@ import (
 	"log"
 
 	pb "github.com/opiproject/opi-api/security/v1alpha1/gen/go"
+	"go.einride.tech/aip/resourceid"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -119,8 +120,34 @@ func (s *Server) CreateIpsecSa(_ context.Context, in *pb.CreateIpsecSaRequest) (
 		log.Printf("CreateIpsecSa(): validation failure: %v", err)
 		return nil, err
 	}
+	// see https://google.aip.dev/133#user-specified-ids
+	resourceID := resourceid.NewSystemGenerated()
+	if in.IpsecSaId != "" {
+		log.Printf("client provided the ID of a resource %v, ignoring the name field %v", in.IpsecSaId, in.IpsecSa.Name)
+		resourceID = in.IpsecSaId
+	}
+	in.IpsecSa.Name = resourceIDToFullName(resourceID)
 
-	return &pb.IpsecSa{}, nil
+	// check if the name exists in the SA database
+	saobj, ok := s.IPSecSAs[in.IpsecSa.Name]
+	if ok {
+		log.Printf("CreateIpsecSa(): Already existing IpsecSa with id %v", in.IpsecSa.Name)
+		return saobj, nil
+	}
+
+	// if it doesnt already exist, create a new entry
+	saEnt := new(pb.IpsecSa)
+	// setup the SA parameters for the new entry
+	saEnt.Name = in.IpsecSa.Name
+	saEnt.Reqid = in.IpsecSa.Reqid
+	saEnt.Config = in.IpsecSa.Config
+	
+	// store the entry in the SA database
+	s.IPSecSAs[saEnt.Name] = saEnt
+	log.Printf("Created SA = %s", saEnt)
+
+	// return the response
+	return saEnt, nil
 }
 
 // Delete Ipsec Security Association
